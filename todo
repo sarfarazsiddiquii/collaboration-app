@@ -1,5 +1,5 @@
-workspace creation is done. just the creation, it doesmt serves the purpose as of now.
-invite is via email now - change it to code. and actually see the editing collab part (not done)
-login signup done
-tiptap integration is remaning.
-(see more changes in docs)
+creating and joining workspace logic - id pass/access.
+adding collab and socket with tiptop.
+integrate the Tiptap editor.
+point 6 explanation.
+file tree visual

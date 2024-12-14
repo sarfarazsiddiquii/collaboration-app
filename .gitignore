@@ -37,6 +37,7 @@ yarn-error.log*
 # Coverage directory used by tools like istanbul
 coverage/
 
+app.db
 # Optional npm cache directory
 .npm
 
