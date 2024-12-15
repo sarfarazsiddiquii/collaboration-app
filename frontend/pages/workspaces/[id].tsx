@@ -7,6 +7,8 @@ const WorkspaceDetails = () => {
   const [error, setError] = useState<string | null>(null);
   const [url, setUrl] = useState('');
   const [scrapedContent, setScrapedContent] = useState<string | null>(null);
+  const [joinWorkspaceId, setJoinWorkspaceId] = useState('');
+  const [joinCode, setJoinCode] = useState('');
   const router = useRouter();
   const { id } = router.query;
 
@@ -39,6 +41,23 @@ const WorkspaceDetails = () => {
       setScrapedContent(res.data.content);
     } catch (error) {
       setError('Error scraping content.');
+    }
+  };
+
+  const handleJoinWorkspace = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    try {
+      const res = await axios.post(
+        'http://localhost:5000/workspaces/join',
+        { workspace_id: joinWorkspaceId, code: joinCode },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setJoinWorkspaceId('');
+      setJoinCode('');
+      setWorkspace(res.data);
+    } catch (error) {
+      setError('Error joining workspace.');
     }
   };
 

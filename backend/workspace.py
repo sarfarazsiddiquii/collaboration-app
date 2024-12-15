@@ -29,6 +29,37 @@ def create_workspace():
 
     return jsonify({"message": "Workspace created successfully", "workspace_id": new_workspace.id}), 201
 
+# Join a workspace with a workspace code
+@workspace_bp.route('/workspaces/join', methods=['POST'])
+@jwt_required()
+def join_workspace():
+    data = request.get_json()
+    workspace_id = data.get('workspace_id')
+    code = data.get('code')
+    email = get_jwt_identity()
+
+    if not workspace_id or not code:
+        return jsonify({"message": "Workspace ID and code are required"}), 400
+
+    workspace = Workspace.query.get(workspace_id)
+    if not workspace:
+        return jsonify({"message": "Workspace not found"}), 404
+
+    if not workspace.check_password(code):
+        return jsonify({"message": "Incorrect code"}), 401
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    if user in workspace.users:
+        return jsonify({"message": "User already in the workspace"}), 400
+
+    workspace.users.append(user)
+    db.session.commit()
+
+    return jsonify({"message": "Successfully joined the workspace", "workspace_id": workspace.id, "name": workspace.name}), 200
+
 # Fetch all workspaces
 @workspace_bp.route('/workspaces', methods=['GET'])
 @jwt_required()
@@ -63,4 +94,4 @@ def get_workspace(workspace_id):
         "code": workspace.plain_code,  # Display the plain text code temporarily
         "users": users
     }
-    return jsonify(workspace_details), 200  
+    return jsonify(workspace_details), 200
