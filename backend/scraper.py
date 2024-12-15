@@ -51,3 +51,22 @@ def scrape(workspace_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# Scrape content from a given URL
+@scraper_bp.route('/scrape', methods=['POST'])
+@jwt_required()
+def scrape_content():
+    data = request.get_json()
+    url = data.get('url')
+
+    if not url:
+        return jsonify({"message": "URL is required"}), 400
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'html.parser')
+        content = soup.get_text()
+        return jsonify({"content": content}), 200
+    except requests.exceptions.RequestException as e:
+        return jsonify({"message": f"Error scraping content: {str(e)}"}), 500
