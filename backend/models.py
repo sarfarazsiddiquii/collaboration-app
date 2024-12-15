@@ -20,7 +20,16 @@ class Workspace(db.Model):
     name = db.Column(db.String(255), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    password_hash = db.Column(db.String(128), nullable=False)
+    plain_code = db.Column(db.String(128), nullable=False)  # Temporary field for demonstration
     users = db.relationship('User', secondary='workspace_user', backref='workspaces')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+        self.plain_code = password  # Store the plain text code temporarily
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 # Many-to-Many relationship for workspaces and users
 workspace_user = db.Table(
